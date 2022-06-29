@@ -1,16 +1,14 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const MergeIntoSingleFilePlugin = require('webpack-merge-and-include-globally')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-  entry: [
-    path.resolve(__dirname, "src", "main.js"),
-    path.resolve(__dirname, "src", "main.scss"),
-  ],
+  entry: [path.resolve(__dirname, 'src', 'main.js'), path.resolve(__dirname, 'src', 'main.scss')],
   output: {
-    path: path.join(__dirname, "dist"),
-    filename: "dist.js"
+    path: path.join(__dirname, 'dist'),
+    filename: 'dist.js',
   },
   module: {
     rules: [
@@ -18,14 +16,12 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
+          'css-loader',
           {
-            loader: "sass-loader",
+            loader: 'sass-loader',
             options: {
               sassOptions: {
-                includePaths: [
-                  "src/main.scss"
-                ],
+                includePaths: ['src/main.scss'],
               },
             },
           },
@@ -35,28 +31,36 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "dist.css"
+      filename: 'dist.css',
     }),
     new MergeIntoSingleFilePlugin({
       files: {
-        "vendor.js": [
-          'node_modules/jquery/dist/jquery.min.js',
-          'node_modules/bootstrap/dist/js/bootstrap.min.js',
-          'node_modules/summernote/dist/summernote.min.js',
-          'node_modules/@standardnotes/component-relay/dist/dist.js',
-          'node_modules/dompurify/dist/purify.min.js',
-          'node_modules/sn-stylekit/dist/stylekit.js'
+        'vendor.js': [
+          require.resolve('jquery/dist/jquery.min.js'),
+          require.resolve('bootstrap/dist/js/bootstrap.min.js'),
+          require.resolve('summernote/dist/summernote.min.js'),
+          require.resolve('@standardnotes/component-relay/dist/dist.js'),
+          require.resolve('dompurify/dist/purify.min.js'),
+          'node_modules/sn-stylekit/dist/stylekit.js',
         ],
-        "vendor.css": [
-          'node_modules/bootstrap/dist/css/bootstrap.min.css',
-          'node_modules/summernote/dist/summernote.min.css',
-          'node_modules/sn-stylekit/dist/stylekit.css'
-        ]
-      }
+        'vendor.css': [
+          require.resolve('bootstrap/dist/css/bootstrap.min.css'),
+          require.resolve('summernote/dist/summernote.min.css'),
+          'node_modules/sn-stylekit/dist/stylekit.css',
+        ],
+      },
     }),
     new HtmlWebpackPlugin({
-      title: "Plus Editor",
-      template: "editor.index.ejs"
-    })
+      title: 'Plus Editor',
+      template: 'editor.index.ejs',
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'vendor',
+          to: '.',
+        },
+      ],
+    }),
   ],
-};
+}
